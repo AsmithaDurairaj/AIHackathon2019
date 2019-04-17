@@ -1,0 +1,386 @@
+####################
+# Intent declaration
+####################
+
+intent intent_greeting:
+- 'hi'
+- 'hello'
+- 'hey'
+- 'hello Fix -IT Bot'
+- 'hi fix IT bot'
+- 'hey there'
+- 'good morning'
+- 'good evening'
+- 'My employee_id is [Number:employee_id](1234)'
+- 'Sure my employee id is [Number:employee_id](1435)'
+- 'My id is [Number:employee_id](4257)'
+- 'Employee Id is [Number:employee_id](2025)'
+- '[Number:employee_id](3025)'
+
+
+
+intent intent_farewell:
+- 'thats it.Thank you'
+- 'thats all I want to do today'
+- 'Thanks I am good'
+- 'Thank you'
+- 'Thanks'
+- 'thats all I need'
+- 'thanks'
+- 'thank you'
+- 'good bye'
+- 'okay thanks'
+- 'okay'
+- 'ok'
+
+intent intent_search_faq:
+
+intent intent_check_ticket_status:
+- 'I want to check my ticket status'
+- 'Please show the status of my ticket'
+- 'I would like to know the status of my ticket'
+- 'Check ticket status'
+- 'I would like to check my ticket status'
+- 'My ticket id is [Ticket_id:ticket_id](TS-1)'
+- 'Ticket id is [Ticket_id:ticket_id](TS-10)'
+- 'Sure. ticket id is [Ticket_id:ticket_id](TS-200)'
+- '[Ticket_id:ticket_id](TS 10)'
+- 'Check status of the ticket [Ticket_id:ticket_id](TS -3)'
+
+
+intent intent_poor_service:
+- 'The issue is still unresolved.This is so frustrating'
+- 'Issue still unresolved.This blocks my work'
+- 'Issue remains in open state for last few weeks.IT service is very poor'
+- 'I am so furstrated with the service.This issue has been in Open state for more than a week'
+
+
+
+
+
+intent affirm:
+- 'yes'
+- 'yeah'
+- 'yup'
+- 'right'
+- 'alright'
+- 'sure'
+- 'absolutely'
+- 'Ok'
+- 'Okay'
+- 'yes it worked'
+- 'that worked'
+- 'that would be great'
+- 'yeah now the issue is resolved'
+- 'yes it fixed my issue'
+- 'yeah issue is fixed now'
+
+
+intent deny:
+- 'no'
+- 'nope'
+- 'no It did not work'
+- 'issue still exist'
+- 'its not fixed yet'
+- 'its still not working'
+- 'no change in the behavior'
+- 'it does not resolve my issue'
+
+
+intent intent_asset_replacement:
+- 'I would like to do a replacement for my monitor'
+- 'I would like to replace my mouse'
+- 'I want to replace my Keyboard'
+- 'Replace my headphone'
+- 'replace my keyboard'
+- 'Replace my docking station'
+- 'Please replace my dock station'
+- 'I want to change my Monitor'
+- 'I want to change my Headset'
+
+
+
+
+intent intent_access_request:
+- 'can you grant me access for msdn'
+- 'I want access for aws'
+- 'require access for visio'
+- 'want access for MSDN'
+- 'Please grant me acces for AWS'
+- 'Get me access for Visio'
+- 'Please provide me access for aws'
+- 'I need access for msdn'
+
+context stage:
+- intent_greeting
+- intent_search_faq
+- intent_farewell
+- affirm
+- deny
+- intent_check_ticket_status
+- intent_asset_replacement
+- intent_new_device_request
+
+
+#############
+# Utterances
+#############
+
+utterance utter_greeting:
+- "Hi, I am FixIT Bot . \nI can help you with, \n- IT issues \n- New IT Tickets \n- Status of the ticket \n\n "
+
+utterance utter_greeting2:
+- 'Thanks! Now, Please go ahead and let me know your query'
+
+utterance utter_goodbye:
+- 'Thank you for contacting us.Have a great day'
+
+utterance utter_nextQuery:
+- 'Good to hear that your isssue is resolved.If you have any other questions, please feel free to ask.'
+
+utterance utter_sorry:
+- 'Sorry I cannot find any solution for that. I have raised an ticket for your issue and the ID is {{ticket_id}}.You can view the full details of the ticket in the url - {{ticket_url}}'
+
+utterance utter_confirm_issue_resolved:
+- "{{answer}} \n \n Does this resolve your issue?"
+
+utterance utter_ticket_status:
+- "Your ticket {{ticket_id}} is in - {{ticket_status}} state.It is currently assigned to {{ticket_assignee}} with priority {{ticket_priority}}\n Is there anything else that I can help you with?"
+
+
+utterance utter_provide_ticket_id:
+- 'Sure please provide your ticket id'
+
+
+utterance utter_fallback:
+- 'Sorry we cannot process your request.Please try again'
+
+utterance utter_raised_request:
+- 'Sure.I have raised a ticket for your request and the ID is {{ticket_id}}.You can view the full details of the ticket in the url - {{ticket_url}}'
+
+utterance utter_sorry_not_eligible:
+- 'Sorry you are not eligible for accessing {{device}}.For more details please contact IT Admin'
+
+utterance utter_sorry_device_unavailable:
+- 'Sorry  {{device}} is currently unavailable.For more details please contact IT Admin'
+
+utterance utter_sorry_invalid_ticket:
+- 'Sorry the ticket number you entered - {{ticket_id}} is incorrect.Please try again'
+
+
+
+utterance utter_updated_ticket:
+- 'Sorry to hear that.I have updated the priority of your ticket {{ticket_id}} to {{ticket_priority}}.'
+
+####################
+# Slot declaration.
+####################
+
+slot query: String
+#slot greeting: String
+slot answer: String
+slot issue_resolved: String
+slot ticket_id:
+    entity: Ticket_id
+    prompts:
+    - "Sure.Please give your ticket id"
+slot ticket_status: String
+slot ticket_url: String
+slot ticket_priority: String
+slot ticket_assignee: String
+slot eligible: String
+slot available: String
+slot device: String
+slot request: String
+slot flag: String
+slot user_response:
+    entity: String
+    prompts:
+    - 'Is there anything else that I can help you with?'
+slot employee_id:
+    entity: Number
+    prompts:
+    - "Can you please provide your Employee id?"
+#slot ticket_due_date: String
+
+
+#slot community_failure: String
+#slot disambiguation_category_value: String
+
+behavior_tree root:
+    - fallback:
+        - condition: eq(msg, __INIT__)
+        - sequence*:
+            - condition: intent_greeting
+            - action: utter_greeting
+            - action: ask(employee_id)
+            - action: utter_greeting2
+            - action: clear_intent(intent_greeting)
+        - sequence:
+            - condition: intent_farewell
+            - action: utter_goodbye
+            - action: clear_intent(intent_farewell)
+        - sequence*:
+            - condition: intent_asset_replacement
+            - action: clear_slot(ticket_id)
+            - action: set_slot(flag= 'no')
+            - action: set_slot(request=msg)
+            - action: available ,device = check_asset_request_eligibility(request = request, employee_id= employee_id )
+            - fallback:
+                - sequence eq(available, yes):
+                    - action: ticket_id ,ticket_url = raise_ticket(query = request)
+                    - action: utter_raised_request
+                    - action: clear_slot(request)
+                    - action: clear_slot(device)
+                    - action: clear_slot(ticket_id)
+                    - action: clear_slot(ticket_url)
+                - sequence eq(available, no):
+                    - action: utter_sorry_device_unavailable
+                    - action: clear_slot(request)
+                    - action: clear_slot(device)
+                    - action: clear_intent(intent_asset_replacement)
+        - sequence*:
+            - condition: intent_access_request
+            - action: clear_slot(ticket_id)
+            - action: set_slot(flag= 'no')
+            - action: set_slot(request=msg)
+            - action: eligible ,device = check_asset_request_eligibility(request = request, employee_id= employee_id )
+            - fallback:
+                - sequence eq(eligible, yes):
+                    - action: ticket_id ,ticket_url = raise_ticket(query = request)
+                    - action: utter_raised_request
+                    - action: clear_slot(request)
+                    - action: clear_slot(device)
+                    - action: clear_slot(ticket_id)
+                    - action: clear_slot(ticket_url)
+                - sequence eq(eligible, no):
+                    - action: utter_sorry_not_eligible
+                    - action: clear_slot(request)
+                    - action: clear_slot(device)
+                    - action: clear_intent(intent_access_request)
+        - sequence*:
+            - condition: intent_check_ticket_status
+            - action: ask(ticket_id)
+            - action: ticket_status , ticket_priority , ticket_assignee = check_ticket_status(ticket_id = ticket_id)
+            - fallback:
+                - sequence eq(ticket_status, fail):
+                    - action: utter_sorry_invalid_ticket
+                    - action: clear_slot(ticket_id)
+                    - action: clear_intent(intent_check_ticket_status)
+                - sequence:
+                    - action: set_slot(flag = 'yes')
+                    - action: utter_ticket_status
+                    - action: clear_intent(intent_check_ticket_status)
+        - sequence intent_poor_service:
+                    - condition: eq(flag, yes)
+                    - action: ticket_priority = sentiment_analysis(user_response = msg)
+                    - action: update_ticket_priority(ticket_id = ticket_id,ticket_priority = ticket_priority)
+                    - action: ticket_status , ticket_priority , ticket_assignee = check_ticket_status(ticket_id = ticket_id)
+                    - action: utter_updated_ticket
+                    - action: set_slot(flag= 'no')
+                    - action: clear_slot(ticket_id)
+                    - action: clear_slot(ticket_priority)
+                    - action: clear_slot(user_response)
+                    - action: clear_intent(intent_check_ticket_status)
+        - sequence*:
+            - action: set_slot(query=msg)
+            - action: clear_slot(ticket_id)
+            - action: set_slot(flag= 'no')
+            - action: set_intent(intent_search_faq)
+            - action: answer = search_faq(query=query)
+            - action: issue_resolved = ask_yes_no(utter_confirm_issue_resolved)
+            - fallback:
+                - sequence eq(issue_resolved, YES):
+                    - action: utter_nextQuery
+                - sequence eq(issue_resolved, NO):
+                    - action: ticket_id ,ticket_url = raise_ticket(query = query)
+                    - action: utter_sorry
+                    - action: clear_slot(ticket_id)
+        - action: utter_fallback
+
+
+
+
+
+####################
+# Generic Plugins
+####################
+
+# Decorators
+plugin memo: de2.decorators.memo
+plugin retry: de2.decorators.retry
+plugin catch: de2.decorators.catch
+plugin pass: de2.decorators.override
+plugin run_once: de2.decorators.run_once
+plugin fail: de2.decorators.fail
+plugin negate: de2.decorators.negate
+plugin log: de2.decorators.log
+
+# Conditions
+plugin eq: de2.conditions.eq
+plugin slot_not_filled: de2.conditions.slot_not_filled
+plugin slot_filled: de2.conditions.slot_filled
+plugin no_response: de2.conditions.no_response
+plugin response: de2.conditions.response
+plugin not: de2.conditions.not_guard
+plugin is_active: de2.conditions.is_active
+plugin inc: de2.actions.increment
+plugin greater_equal: de2.conditions.greater_equal
+plugin is_true: de2.conditions.is_true
+
+# Actions
+plugin clear_context: de2.context_plugins.clear_context
+plugin say: de2.actions.say
+plugin set_intent: de2.actions.set_intent
+plugin confirm_intent: de2.actions.confirm_intent
+plugin clear_intent: de2.actions.clear_intent
+plugin reset_state: de2.actions.reset_state
+plugin ask: de2.actions.ask
+plugin ask_optional: de2.actions.ask_optional
+plugin clear_slot: de2.actions.clear_slot
+plugin ask_yes_no: de2.actions.ask_yes_no
+plugin reset_state: de2.actions.reset_state
+plugin set_value: de2.actions.set_value
+plugin set_slot: de2.actions.set_slot
+plugin clear_slot: de2.actions.clear_slot
+plugin debug: de2.actions.debug
+plugin show: de2.actions.show
+plugin select_options: de2.actions.select_options
+plugin return: de2.actions.return_tree
+plugin throw: de2.actions.throw
+plugin confirm: de2.actions.confirm_action
+plugin always_succeed: de2.conditions.always_succeed
+
+####################
+# Plugins: Core Entities
+####################
+plugin String: de2.entities.BuiltIn
+plugin Number: de2.entities.BuiltIn
+plugin DateTime: de2.entities.BuiltIn
+
+
+
+####################
+# Plugins for Domain specific actions
+####################
+plugin search_faq: fixit_bot_sample.search_faq
+plugin raise_ticket: fixit_bot_sample.raise_ticket
+plugin check_ticket_status: fixit_bot_sample.check_ticket_status
+plugin check_asset_request_eligibility: fixit_bot_sample.check_asset_request_eligibility
+plugin update_ticket_priority: fixit_bot_sample.update_ticket_priority
+plugin sentiment_analysis: fixit_bot_sample.sentiment_analysis
+plugin Ticket_id:
+    path: de2.entities.CustomList
+    expandable: True
+    data:
+        TS-1: [ts-1, Ts 1, TS - 1]
+        TS-2: [ts-2, Ts 2, TS - 2]
+        TS-30: [ts-30, Ts 30, TS - 30]
+        TS-100: [ts-100, Ts 100, TS - 100]
+        TS-2000: [ts-2000, Ts 2000, TS - 2000]
+
+####################
+# Plugins for Entity declaration.
+####################
+plugin String: de2.entities.BuiltIn
+plugin Boolean: de2.entities.BuiltIn
